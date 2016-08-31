@@ -2,7 +2,7 @@
 
 This repo contains a minimal UI that supplements an IdentityServer4 configured for in-memory clients, users, and scopes.
 
-You typically start out with a startup file that looks similar to this:
+You typically start out with an empty web project and a startup file that looks similar to this:
 
 ```csharp
 public class Startup
