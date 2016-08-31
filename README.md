@@ -37,4 +37,6 @@ To add a simple UI for login, logout, consent and errors, clone this repo and dr
 
 Alternatively you can automatically copy the content to you project directory by executing the following line in Powershell:
 
-`iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))`
+```
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
+``` 
