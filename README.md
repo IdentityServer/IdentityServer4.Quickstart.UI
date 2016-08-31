@@ -11,8 +11,9 @@ public class Startup
     {
         services.AddMvc();
 
+        // configure clients, scopes and users in-memory
         services.AddIdentityServerQuickstart()
-            .AddInMemoryClients(Config.GetClient())
+            .AddInMemoryClients(Config.GetClienst())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
     }
