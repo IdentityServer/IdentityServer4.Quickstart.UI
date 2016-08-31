@@ -32,3 +32,5 @@ public class Startup
 ```
 
 To add a simple UI for login, logout, consent and errors, clone this repo and drop the folders into your ASP.NET Core project.
+
+`git clone https://github.com/IdentityServer/IdentityServer4.Quickstart.UI`
