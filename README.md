@@ -13,7 +13,7 @@ public class Startup
 
         // configure clients, scopes and users in-memory
         services.AddIdentityServerQuickstart()
-            .AddInMemoryClients(Config.GetClienst())
+            .AddInMemoryClients(Config.GetClients())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
     }
