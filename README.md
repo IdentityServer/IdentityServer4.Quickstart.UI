@@ -18,7 +18,7 @@ public class Startup
             .AddInMemoryUsers(Config.GetUsers());
     }
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
     {
         loggerFactory.AddConsole();
         app.UseDeveloperExceptionPage();
