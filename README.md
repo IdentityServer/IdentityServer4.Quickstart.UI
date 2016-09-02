@@ -54,11 +54,7 @@ public class Startup
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
         loggerFactory.AddConsole();
-
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
+        app.UseDeveloperExceptionPage();
 
         app.UseIdentityServer();
 
@@ -77,3 +73,66 @@ Alternatively you can run this script from your web project folder to download t
 ```
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
 ``` 
+
+### Adding support for external authentication
+
+You can add support for external authentication providers by adding additional authentication middleware to your pipeline.
+For this example we are adding support for a cloud hosted identityserver3 instance via the OpenID Connect protocol.
+
+Add the following packages to project.json:
+
+```
+"Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
+"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0"
+```
+
+Next you need to configure the authentication middleware in your pipeline. As always - order is important - the additional authentication middleware must run **after** identityserver, but **before** MVC:
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc();
+
+        services.AddIdentityServerQuickstart()
+            .AddInMemoryClients(Config.GetClient())
+            .AddInMemoryScopes(Config.GetScopes())
+            .AddInMemoryUsers(Config.GetUsers());
+    }
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    {
+        loggerFactory.AddConsole();
+        app.UseDeveloperExceptionPage();
+
+        app.UseIdentityServer();
+
+        app.UseCookieAuthentication(new CookieAuthenticationOptions
+        {
+            AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+            AutomaticAuthenticate = false,
+            AutomaticChallenge = false
+        });
+
+        app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+        {
+            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+            SignOutScheme = IdentityServerConstants.SignoutScheme,
+
+            DisplayName = "IdentityServer3",
+            Authority = "https://demo.identityserver.io/",
+            ClientId = "implicit",
+                
+            TokenValidationParameters = new TokenValidationParameters
+            {
+                NameClaimType = "name",
+                RoleClaimType = "role"
+            }
+        });
+
+        app.UseStaticFiles();
+        app.UseMvcWithDefaultRoute();
+    }
+}
+```
