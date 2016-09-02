@@ -4,9 +4,9 @@ Invoke-WebRequest $source -OutFile ui.zip
 Expand-Archive ui.zip
 
 if (!(Test-Path -Path Controllers)) { mkdir Controllers }
-if (!(Test-Path -Path Models)) { mkdir Models }
-if (!(Test-Path -Path Views)) { mkdir Views }
-if (!(Test-Path -Path wwwroot)) { mkdir wwwroot }
+if (!(Test-Path -Path Models))      { mkdir Models }
+if (!(Test-Path -Path Views))       { mkdir Views }
+if (!(Test-Path -Path wwwroot))     { mkdir wwwroot }
 
 copy .\ui\IdentityServer4.Quickstart.UI-dev\Controllers\* Controllers -recurse -force
 copy .\ui\IdentityServer4.Quickstart.UI-dev\Models\* Models -recurse -force
