@@ -77,13 +77,14 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercon
 ### Adding support for external authentication
 
 You can add support for external authentication providers by adding additional authentication middleware to your pipeline.
-For this example we are adding support for a cloud hosted identityserver3 instance via the OpenID Connect protocol.
+For this example we are adding support for a cloud hosted identityserver3 instance via the OpenID Connect protocol and Google authentication.
 
 Add the following packages to project.json:
 
 ```
 "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0"
+"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0",
+"Microsoft.AspNetCore.Authentication.Google": "1.0.0"
 ```
 
 Next you need to configure the authentication middleware in your pipeline. As always - order is important - the additional authentication middleware must run **after** identityserver, but **before** MVC:
@@ -115,6 +116,14 @@ public class Startup
             AutomaticChallenge = false
         });
 
+        app.UseGoogleAuthentication(new GoogleOptions
+        {
+            AuthenticationScheme = "Google",
+            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+            ClientId = "insert_your_client_id",
+            ClientSecret = "insert_your_client_secret",
+        });
+        
         app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
         {
             SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
@@ -136,3 +145,5 @@ public class Startup
     }
 }
 ```
+
+**Note** for Google authentication you need to register your local quickstart identityserver using thir developer [console](https://console.developers.google.com). As a redirect URL use the URL of your local identityserver and add `/signin-google`.
