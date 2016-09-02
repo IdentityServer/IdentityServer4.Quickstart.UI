@@ -1,16 +1,16 @@
 # Quickstart UI for an in-memory IdentityServer4
 
-This repo contains a minimal UI that supplements an IdentityServer4 configured for in-memory clients, users, and scopes.
+This repo contains an MVC based UI for login, logout and consent that supplements an IdentityServer4 configured for in-memory clients, users, and scopes.
 
-You typically start out with an empty web project and a startup file that looks similar to this:
+## Instructions
+
+The assumption is that you started with an empty web application, added identityserver and configured the in-memory scopes, clients and users. Your startup file will look similar to this at this point:
 
 ```csharp
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddMvc();
-
         // configure clients, scopes and users in-memory
         services.AddIdentityServerQuickstart()
             .AddInMemoryClients(Config.GetClients())
@@ -24,6 +24,43 @@ public class Startup
         app.UseDeveloperExceptionPage();
       
         app.UseIdentityServer();
+    }
+}
+```
+
+### Adding MVC
+Before you can add the quickstart UI you need to add the following packages to project.json:
+
+```
+"Microsoft.AspNetCore.Mvc": "1.0.0",
+"Microsoft.AspNetCore.StaticFiles": "1.0.0"
+```
+
+...and add MVC and static files to your pipeline:
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc();
+
+        services.AddIdentityServerQuickstart()
+            .AddInMemoryClients(Config.GetClient())
+            .AddInMemoryScopes(Config.GetScopes())
+            .AddInMemoryUsers(Config.GetUsers());
+    }
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    {
+        loggerFactory.AddConsole();
+
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseIdentityServer();
 
         app.UseStaticFiles();
         app.UseMvcWithDefaultRoute();
@@ -31,11 +68,11 @@ public class Startup
 }
 ```
 
-To add a simple UI for login, logout, consent and errors, clone this repo and drop the folders into your ASP.NET Core project.
+### Adding the quickstart UI
 
-`git clone https://github.com/IdentityServer/IdentityServer4.Quickstart.UI`
+This repo contains the controllers, models, views and CSS files needed for the UI. Simply download/clone it and copy the folders into the web project.
 
-Alternatively you can automatically copy the content to you project directory by executing the following line in Powershell:
+Alternatively you can run this script from your web project folder to download them automatically:
 
 ```
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
