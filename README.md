@@ -120,7 +120,7 @@ public class Startup
             SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
             SignOutScheme = IdentityServerConstants.SignoutScheme,
 
-            DisplayName = "IdentityServer3",
+            DisplayName = "OpenID Connect",
             Authority = "https://demo.identityserver.io/",
             ClientId = "implicit",
                 
