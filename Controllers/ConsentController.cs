@@ -12,16 +12,19 @@ using IdentityServer4.Quickstart.UI.Models;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
+    /// <summary>
+    /// This controller implements the consent logic
+    /// </summary>
     public class ConsentController : Controller
     {
         private readonly ILogger<ConsentController> _logger;
         private readonly IClientStore _clientStore;
-        private readonly IUserInteractionService _interaction;
         private readonly IScopeStore _scopeStore;
-
+        private readonly IIdentityServerInteractionService _interaction;
+        
         public ConsentController(
             ILogger<ConsentController> logger,
-            IUserInteractionService interaction,
+            IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IScopeStore scopeStore)
         {
@@ -31,9 +34,15 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             _scopeStore = scopeStore;
         }
 
+        /// <summary>
+        /// Shows the consent screen
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Index(string returnUrl)
         {
+            // todo: check for valid return URL?
             var vm = await BuildViewModelAsync(returnUrl);
             if (vm != null)
             {
@@ -43,19 +52,26 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             return View("Error");
         }
 
+        /// <summary>
+        /// Handles the consent screen postback
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ConsentInputModel model)
         {
+            // parse the return URL back to an AuthorizeRequest object
             var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
             ConsentResponse response = null;
 
+            // user clicked 'no' - send back the standard 'access_denied' response
             if (model.Button == "no")
             {
                 response = ConsentResponse.Denied;
             }
+            // user clicked 'yes' - validate the data
             else if (model.Button == "yes" && model != null)
             {
+                // if the user consented to some scope, build the response model
                 if (model.ScopesConsented != null && model.ScopesConsented.Any())
                 {
                     response = new ConsentResponse
@@ -76,7 +92,11 @@ namespace IdentityServer4.Quickstart.UI.Controllers
 
             if (response != null)
             {
+                // communicate outcome of consent back to identityserver
                 await _interaction.GrantConsentAsync(request, response);
+
+                // todo: check for valid return URL?
+                // redirect back to authorization endpoint
                 return Redirect(model.ReturnUrl);
             }
 
