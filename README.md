@@ -109,6 +109,7 @@ public class Startup
 
         app.UseIdentityServer();
 
+        // cookie middleware for temporarily storing the outcome of the external authentication
         app.UseCookieAuthentication(new CookieAuthenticationOptions
         {
             AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
@@ -116,6 +117,7 @@ public class Startup
             AutomaticChallenge = false
         });
 
+        // middleware for google authentication
         app.UseGoogleAuthentication(new GoogleOptions
         {
             AuthenticationScheme = "Google",
@@ -124,6 +126,7 @@ public class Startup
             ClientSecret = "insert_your_client_secret",
         });
         
+        // middleware for external openid connect authentication
         app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
         {
             SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
