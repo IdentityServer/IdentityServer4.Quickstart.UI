@@ -149,4 +149,4 @@ public class Startup
 }
 ```
 
-**Note** for Google authentication you need to register your local quickstart identityserver using thir developer [console](https://console.developers.google.com). As a redirect URL use the URL of your local identityserver and add `/signin-google`.
+**Note** for Google authentication you need to register your local quickstart identityserver using the Google developer [console](https://console.developers.google.com). As a redirect URL use the URL of your local identityserver and add `/signin-google`.
