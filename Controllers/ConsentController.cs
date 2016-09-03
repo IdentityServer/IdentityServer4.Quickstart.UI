@@ -42,7 +42,6 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string returnUrl)
         {
-            // todo: check for valid return URL?
             var vm = await BuildViewModelAsync(returnUrl);
             if (vm != null)
             {
@@ -95,7 +94,6 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                 // communicate outcome of consent back to identityserver
                 await _interaction.GrantConsentAsync(request, response);
 
-                // todo: check for valid return URL?
                 // redirect back to authorization endpoint
                 return Redirect(model.ReturnUrl);
             }
