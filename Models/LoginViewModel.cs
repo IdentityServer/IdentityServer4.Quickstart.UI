@@ -24,7 +24,6 @@ namespace IdentityServer4.Quickstart.UI.Models
         {
             Username = other.Username;
             Password = other.Password;
-            RememberLogin = other.RememberLogin;
             ReturnUrl = other.ReturnUrl;
         }
 
