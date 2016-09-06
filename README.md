@@ -122,8 +122,8 @@ public class Startup
         {
             AuthenticationScheme = "Google",
             SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            ClientId = "insert_your_client_id",
-            ClientSecret = "insert_your_client_secret",
+            ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com",
+            ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo"
         });
         
         // middleware for external openid connect authentication
@@ -150,3 +150,4 @@ public class Startup
 ```
 
 **Note** for Google authentication you need to register your local quickstart identityserver using the Google developer [console](https://console.developers.google.com). As a redirect URL, use the URL of your local identityserver and add `/signin-google`.
+If your IdentityServer is running on port 5000 - you can use the above client id/secret which is pre-registered.
