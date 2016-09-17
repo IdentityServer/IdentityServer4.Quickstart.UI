@@ -68,7 +68,7 @@ public class Startup
 
 This repo contains the controllers, models, views and CSS files needed for the UI. Simply download/clone it and copy the folders into the web project.
 
-Alternatively you can run this script from your web project folder to download them automatically:
+Alternatively you can run this powershell script from your web project folder to download them automatically:
 
 ```
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
