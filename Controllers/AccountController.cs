@@ -46,6 +46,12 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context != null)
             {
+                if (context.IdP != null)
+                {
+                    // if IdP is passed, then bypass showing the login screen
+                    return External(context.IdP, returnUrl);
+                }
+                
                 vm.Username = context.LoginHint;
                 vm.ReturnUrl = returnUrl;
             }
