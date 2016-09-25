@@ -14,6 +14,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
@@ -26,13 +28,16 @@ namespace IdentityServer4.Quickstart.UI.Controllers
     {
         private readonly InMemoryUserLoginService _loginService;
         private readonly IIdentityServerInteractionService _interaction;
+        private readonly IClientStore _clientStore;
 
         public AccountController(
             InMemoryUserLoginService loginService,
-            IIdentityServerInteractionService interaction)
+            IIdentityServerInteractionService interaction,
+            IClientStore clientStore)
         {
             _loginService = loginService;
             _interaction = interaction;
+            _clientStore = clientStore;
         }
 
         /// <summary>
@@ -41,19 +46,19 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
-            var vm = new LoginViewModel(HttpContext);
-
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            if (context != null)
+            if (context?.IdP != null)
             {
-                if (context.IdP != null)
-                {
-                    // if IdP is passed, then bypass showing the login screen
-                    return External(context.IdP, returnUrl);
-                }
-                
-                vm.Username = context.LoginHint;
-                vm.ReturnUrl = returnUrl;
+                // if IdP is passed, then bypass showing the login screen
+                return External(context.IdP, returnUrl);
+            }
+
+            var vm = await BuildLoginViewModelAsync(returnUrl, context);
+
+            if (vm.EnableLocalLogin == false && vm.ExternalProviders.Count() == 1)
+            {
+                // only one option for logging in
+                return External(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
             }
 
             return View(vm);
@@ -88,8 +93,50 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             }
 
             // something went wrong, show form with error
-            var vm = new LoginViewModel(HttpContext, model);
+            var vm = await BuildLoginViewModelAsync(model);
             return View(vm);
+        }
+
+        async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, AuthorizationRequest context)
+        {
+            var providers = HttpContext.Authentication.GetAuthenticationSchemes()
+                .Where(x => x.DisplayName != null)
+                .Select(x => new ExternalProvider
+                {
+                    DisplayName = x.DisplayName,
+                    AuthenticationScheme = x.AuthenticationScheme
+                });
+
+            var allowLocal = true;
+            if (context?.ClientId != null)
+            {
+                var client = await _clientStore.FindClientByIdAsync(context.ClientId);
+                if (client != null)
+                {
+                    allowLocal = client.EnableLocalLogin;
+
+                    if (client.IdentityProviderRestrictions != null)
+                    {
+                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme));
+                    }
+                }
+            }
+
+            return new LoginViewModel
+            {
+                EnableLocalLogin = allowLocal,
+                ReturnUrl = returnUrl,
+                Username = context?.LoginHint,
+                ExternalProviders = providers.ToArray()
+            };
+        }
+
+        async Task<LoginViewModel> BuildLoginViewModelAsync(LoginInputModel model)
+        {
+            var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+            var vm = await BuildLoginViewModelAsync(model.ReturnUrl, context);
+            vm.Username = model.Username;
+            return vm;
         }
 
         /// <summary>
@@ -176,15 +223,21 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             }
 
             return Redirect("~/");
-
         }
 
         /// <summary>
         /// Show logout page
         /// </summary>
         [HttpGet]
-        public IActionResult Logout(string logoutId)
+        public async Task<IActionResult> Logout(string logoutId)
         {
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context?.IsAuthenticatedLogout == true)
+            {
+                // if the logout request is authenticated, it's safe to automatically sign-out
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
             var vm = new LogoutViewModel
             {
                 LogoutId = logoutId
