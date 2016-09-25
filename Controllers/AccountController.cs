@@ -232,7 +232,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         public async Task<IActionResult> Logout(string logoutId)
         {
             var context = await _interaction.GetLogoutContextAsync(logoutId);
-            if (context?.IsAuthenticatedLogout == true)
+            if (context?.ClientId != null)
             {
                 // if the logout request is authenticated, it's safe to automatically sign-out
                 return await Logout(new LogoutViewModel { LogoutId = logoutId });
