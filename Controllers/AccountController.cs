@@ -78,7 +78,20 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                 {
                     // issue authentication cookie with subject ID and username
                     var user = _loginService.FindByUsername(model.Username);
-                    await HttpContext.Authentication.SignInAsync(user.Subject, user.Username);
+
+                    AuthenticationProperties props = null;
+                    // only set explicit expiration here if persistent. 
+                    // otherwise we reply upon expiration configured in cookie middleware.
+                    if (model.RememberLogin)
+                    {
+                        props = new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1)
+                        };
+                    };
+
+                    await HttpContext.Authentication.SignInAsync(user.Subject, user.Username, props);
                     
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
@@ -110,7 +123,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var allowLocal = true;
             if (context?.ClientId != null)
             {
-                var client = await _clientStore.FindClientByIdAsync(context.ClientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(context.ClientId);
                 if (client != null)
                 {
                     allowLocal = client.EnableLocalLogin;
@@ -136,6 +149,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
             var vm = await BuildLoginViewModelAsync(model.ReturnUrl, context);
             vm.Username = model.Username;
+            vm.RememberLogin = model.RememberLogin;
             return vm;
         }
 
@@ -232,7 +246,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         public async Task<IActionResult> Logout(string logoutId)
         {
             var context = await _interaction.GetLogoutContextAsync(logoutId);
-            if (context?.ClientId != null)
+            if (context?.IsAuthenticatedLogout == true)
             {
                 // if the logout request is authenticated, it's safe to automatically sign-out
                 return await Logout(new LogoutViewModel { LogoutId = logoutId });

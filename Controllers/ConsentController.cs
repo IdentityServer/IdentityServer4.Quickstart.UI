@@ -113,10 +113,10 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (request != null)
             {
-                var client = await _clientStore.FindClientByIdAsync(request.ClientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(request.ClientId);
                 if (client != null)
                 {
-                    var scopes = await _scopeStore.FindScopesAsync(request.ScopesRequested);
+                    var scopes = await _scopeStore.FindEnabledScopesAsync(request.ScopesRequested);
                     if (scopes != null && scopes.Any())
                     {
                         return new ConsentViewModel(model, returnUrl, request, client, scopes);
