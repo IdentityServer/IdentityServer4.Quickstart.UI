@@ -50,7 +50,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             if (context?.IdP != null)
             {
                 // if IdP is passed, then bypass showing the login screen
-                return External(context.IdP, returnUrl);
+                return ExternalLogin(context.IdP, returnUrl);
             }
 
             var vm = await BuildLoginViewModelAsync(returnUrl, context);
@@ -58,7 +58,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             if (vm.EnableLocalLogin == false && vm.ExternalProviders.Count() == 1)
             {
                 // only one option for logging in
-                return External(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
+                return ExternalLogin(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
             }
 
             return View(vm);
@@ -154,16 +154,63 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         }
 
         /// <summary>
+        /// Show logout page
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context?.IsAuthenticatedLogout == true)
+            {
+                // if the logout request is authenticated, it's safe to automatically sign-out
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
+            var vm = new LogoutViewModel
+            {
+                LogoutId = logoutId
+            };
+
+            return View(vm);
+        }
+
+        /// <summary>
+        /// Handle logout page postback
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutViewModel model)
+        {
+            // delete authentication cookie
+            await HttpContext.Authentication.SignOutAsync();
+
+            // set this so UI rendering sees an anonymous user
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+            // get context information (client name, post logout redirect URI and iframe for federated signout)
+            var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
+
+            var vm = new LoggedOutViewModel
+            {
+                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
+                ClientName = logout?.ClientId,
+                SignOutIframeUrl = logout?.SignOutIFrameUrl
+            };
+
+            return View("LoggedOut", vm);
+        }
+
+        /// <summary>
         /// initiate roundtrip to external authentication provider
         /// </summary>
         [HttpGet]
-        public IActionResult External(string provider, string returnUrl)
+        public IActionResult ExternalLogin(string provider, string returnUrl)
         {
             if (returnUrl != null)
             {
                 returnUrl = UrlEncoder.Default.Encode(returnUrl);
             }
-            returnUrl = "/account/externalcallback?returnUrl=" + returnUrl;
+            returnUrl = "/account/externallogincallback?returnUrl=" + returnUrl;
 
             // start challenge and roundtrip the return URL
             return new ChallengeResult(provider, new AuthenticationProperties
@@ -176,7 +223,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         /// Post processing of external authentication
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> ExternalCallback(string returnUrl)
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
         {
             // read external identity from the temporary cookie
             var tempUser = await HttpContext.Authentication.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
@@ -237,53 +284,6 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             }
 
             return Redirect("~/");
-        }
-
-        /// <summary>
-        /// Show logout page
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> Logout(string logoutId)
-        {
-            var context = await _interaction.GetLogoutContextAsync(logoutId);
-            if (context?.IsAuthenticatedLogout == true)
-            {
-                // if the logout request is authenticated, it's safe to automatically sign-out
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
-            }
-
-            var vm = new LogoutViewModel
-            {
-                LogoutId = logoutId
-            };
-
-            return View(vm);
-        }
-
-        /// <summary>
-        /// Handle logout page postback
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout(LogoutViewModel model)
-        {
-            // delete authentication cookie
-            await HttpContext.Authentication.SignOutAsync();
-
-            // set this so UI rendering sees an anonymous user
-            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
-
-            // get context information (client name, post logout redirect URI and iframe for federated signout)
-            var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
-
-            var vm = new LoggedOutViewModel
-            {
-                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
-                ClientName = logout?.ClientId,
-                SignOutIframeUrl = logout?.SignOutIFrameUrl
-            };
-
-            return View("LoggedOut", vm);
         }
     }
 }
