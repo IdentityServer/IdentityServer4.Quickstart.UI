@@ -12,7 +12,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         // configure clients, scopes and users in-memory
-        services.AddIdentityServerQuickstart()
+        services.AddDeveloperIdentityServer()
             .AddInMemoryClients(Config.GetClients())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
@@ -45,7 +45,7 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddIdentityServerQuickstart()
+        services.AddDeveloperIdentityServer()
             .AddInMemoryClients(Config.GetClient())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
@@ -96,7 +96,7 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddIdentityServerQuickstart()
+        services.AddDeveloperIdentityServer()
             .AddInMemoryClients(Config.GetClient())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
