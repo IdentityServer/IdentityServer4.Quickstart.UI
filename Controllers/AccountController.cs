@@ -201,7 +201,14 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                 }
 
                 string url = "/Account/Logout?logoutId=" + model.LogoutId;
-                await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });
+                try
+                {
+                    // hack: try/catch to handle social providers that throw
+                    await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });
+                }
+                catch(NotSupportedException)
+                {
+                }
             }
 
             // delete authentication cookie
