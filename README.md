@@ -12,7 +12,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         // configure clients, scopes and users in-memory
-        services.AddDeveloperIdentityServer()
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
+            .AddInMemoryPersistedGrants()
             .AddInMemoryClients(Config.GetClients())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
@@ -45,7 +47,9 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddDeveloperIdentityServer()
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
+            .AddInMemoryPersistedGrants()
             .AddInMemoryClients(Config.GetClient())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
@@ -96,7 +100,9 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddDeveloperIdentityServer()
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
+            .AddInMemoryPersistedGrants()
             .AddInMemoryClients(Config.GetClient())
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryUsers(Config.GetUsers());
