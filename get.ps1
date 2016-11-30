@@ -1,4 +1,4 @@
-$source = "https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/archive/dev.zip"
+$source = "https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/archive/release.zip"
 Invoke-WebRequest $source -OutFile ui.zip
 
 Expand-Archive ui.zip
