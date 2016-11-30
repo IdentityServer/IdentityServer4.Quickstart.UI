@@ -20,19 +20,19 @@ namespace IdentityServer4.Quickstart.UI.Controllers
     {
         private readonly ILogger<ConsentController> _logger;
         private readonly IClientStore _clientStore;
-        private readonly IScopeStore _scopeStore;
+        private readonly IResourceStore _resourceStore;
         private readonly IIdentityServerInteractionService _interaction;
         
         public ConsentController(
             ILogger<ConsentController> logger,
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
-            IScopeStore scopeStore)
+            IResourceStore resourceStore)
         {
             _logger = logger;
             _interaction = interaction;
             _clientStore = clientStore;
-            _scopeStore = scopeStore;
+            _resourceStore = resourceStore;
         }
 
         /// <summary>
@@ -116,10 +116,10 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                 var client = await _clientStore.FindEnabledClientByIdAsync(request.ClientId);
                 if (client != null)
                 {
-                    var scopes = await _scopeStore.FindEnabledScopesAsync(request.ScopesRequested);
-                    if (scopes != null && scopes.Any())
+                    var resources = await _resourceStore.FindEnabledResourcesAsync(request.ScopesRequested);
+                    if (resources != null && (resources.IdentityResources.Any() || resources.ApiResources.Any()))
                     {
-                        return new ConsentViewModel(model, returnUrl, request, client, scopes);
+                        return new ConsentViewModel(model, returnUrl, request, client, resources);
                     }
                     else
                     {
