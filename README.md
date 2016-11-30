@@ -75,7 +75,7 @@ This repo contains the controllers, models, views and CSS files needed for the U
 Alternatively you can run this powershell script from your web project folder to download them automatically:
 
 ```
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
 ``` 
 
 ### Adding support for external authentication
