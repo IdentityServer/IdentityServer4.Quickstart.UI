@@ -16,6 +16,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Host.Filters;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
@@ -24,6 +25,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
     /// The login service encapsulates the interactions with the user data store. This data store is in-memory only and cannot be used for production!
     /// The interaction service provides a way for the UI to communicate with identityserver for validation and context retrieval
     /// </summary>
+    [SecurityHeaders]
     public class AccountController : Controller
     {
         private readonly InMemoryUserLoginService _loginService;

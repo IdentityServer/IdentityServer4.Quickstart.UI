@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Quickstart.UI.Models;
+using Host.Filters;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
     /// <summary>
     /// This controller implements the consent logic
     /// </summary>
+    [SecurityHeaders]
     public class ConsentController : Controller
     {
         private readonly ILogger<ConsentController> _logger;

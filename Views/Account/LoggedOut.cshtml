@@ -1,6 +1,6 @@
 ﻿@model IdentityServer4.Quickstart.UI.Models.LoggedOutViewModel
 
-<div class="page-header">
+<div class="page-header logged-out">
     <h1>
         Logout
         <small>You are now logged out</small>
@@ -16,6 +16,6 @@
 
     @if (Model.SignOutIframeUrl != null)
     {
-        <iframe style="display:none" width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
+        <iframe width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }
 </div>
