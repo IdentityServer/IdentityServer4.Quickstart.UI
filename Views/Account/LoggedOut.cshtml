@@ -1,6 +1,6 @@
 ﻿@model IdentityServer4.Quickstart.UI.Models.LoggedOutViewModel
 
-<div class="page-header">
+<div class="page-header logged-out">
     <h1>
         Logout
         <small>You are now logged out</small>
@@ -9,13 +9,19 @@
     @if (Model.PostLogoutRedirectUri != null)
     {
         <div>
-            Click <a href="@Model.PostLogoutRedirectUri">here</a> to return to the
+            Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
             <span>@Model.ClientName</span> application.
         </div>
     }
 
     @if (Model.SignOutIframeUrl != null)
     {
-        <iframe style="display:none" width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
+        <iframe width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }
 </div>
+
+@section scripts
+{
+    @*uncomment this script to experiment with automatic redirect to client after signout*@
+    @*<script src="~/js/signout-redirect.js"></script>*@
+}
