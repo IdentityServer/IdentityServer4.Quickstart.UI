@@ -1,4 +1,9 @@
-﻿@model IdentityServer4.Quickstart.UI.Models.LoggedOutViewModel
+﻿@model LoggedOutViewModel
+
+@{ 
+    // set this so the layout rendering sees an anonymous user
+    ViewData["signed-out"] = true;
+}
 
 <div class="page-header logged-out">
     <h1>
@@ -22,6 +27,8 @@
 
 @section scripts
 {
-    @*uncomment this script to experiment with automatic redirect to client after signout*@
-    <script src="~/js/signout-redirect.js"></script>
+    @if (Model.AutomaticRedirectAfterSignOut)
+    {
+        <script src="~/js/signout-redirect.js"></script>
+    }
 }

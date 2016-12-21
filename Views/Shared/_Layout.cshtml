@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@using IdentityServer4.Extensions
+@{ 
+    string name = null;
+    if (!true.Equals(ViewData["signed-out"]))
+    {
+        var user = await Context.GetIdentityServerUserAsync();
+        name = user?.FindFirst("name")?.Value;
+    }
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -27,11 +36,11 @@
                 </a>
             </div>
 
-            @if (User.Identity.IsAuthenticated)
+            @if (name != null)
             {
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a asp-action="Logout" asp-controller="Account">Logout</a></li>
                         </ul>
