@@ -168,7 +168,7 @@ namespace IdentityServer4.Quickstart.UI
                 if (HttpContext.User is WindowsPrincipal)
                 {
                     var props = new AuthenticationProperties();
-                    props.Items.Add("scheme", HttpContext.User.Identity.AuthenticationType);
+                    props.Items.Add("scheme", AccountOptions.WindowsAuthenticationProviderName);
 
                     var id = new ClaimsIdentity(provider);
                     id.AddClaim(new Claim(ClaimTypes.NameIdentifier, HttpContext.User.Identity.Name));
