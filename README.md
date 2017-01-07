@@ -10,8 +10,8 @@ The assumption is that you started with an empty web application, added identity
 The quickstart UI uses MVC. Before you can add the UI you need to add the following packages to project.json:
 
 ```
-"Microsoft.AspNetCore.Mvc": "1.0.*",
-"Microsoft.AspNetCore.StaticFiles": "1.0.*"
+"Microsoft.AspNetCore.Mvc": "1.1.0",
+"Microsoft.AspNetCore.StaticFiles": "1.1.0"
 ```
 
 ...and add MVC and static files to your pipeline:
@@ -57,9 +57,9 @@ For this example we are adding support for a cloud hosted identityserver3 instan
 Add the following packages to project.json:
 
 ```
-"Microsoft.AspNetCore.Authentication.Cookies": "1.0.*",
-"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.*",
-"Microsoft.AspNetCore.Authentication.Google": "1.0.*"
+"Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
+"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.1.0",
+"Microsoft.AspNetCore.Authentication.Google": "1.1.0"
 ```
 
 Next you need to configure the authentication middleware in your pipeline. As always - order is important - the additional authentication middleware must run **after** identityserver, but **before** MVC:
@@ -87,8 +87,8 @@ public class Startup
         {
             AuthenticationScheme = "Google",
             SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com",
-            ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo"
+            ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
+            ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
         });
         
         // middleware for external openid connect authentication
