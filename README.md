@@ -74,14 +74,6 @@ public class Startup
 
         app.UseIdentityServer();
 
-        // cookie middleware for temporarily storing the outcome of the external authentication
-        app.UseCookieAuthentication(new CookieAuthenticationOptions
-        {
-            AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            AutomaticAuthenticate = false,
-            AutomaticChallenge = false
-        });
-
         // middleware for google authentication
         app.UseGoogleAuthentication(new GoogleOptions
         {
