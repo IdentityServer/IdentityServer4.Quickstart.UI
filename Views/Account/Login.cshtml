@@ -49,7 +49,7 @@
             </div>
         }
 
-        @if (Model.ExternalProviders.Any())
+        @if (Model.VisibleExternalProviders.Any())
         {
             <div class="col-md-6 col-sm-6 external-providers">
                 <div class="panel panel-default">
@@ -58,7 +58,7 @@
                     </div>
                     <div class="panel-body">
                         <ul class="list-inline">
-                            @foreach (var provider in Model.ExternalProviders)
+                            @foreach (var provider in Model.VisibleExternalProviders)
                             {
                                 <li>
                                     <a class="btn btn-default"
@@ -75,7 +75,7 @@
             </div>
         }
 
-        @if (!Model.EnableLocalLogin && !Model.ExternalProviders.Any())
+        @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
         {
             <div class="alert alert-warning">
                 <strong>Invalid login request</strong>
