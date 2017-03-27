@@ -16,6 +16,8 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Quickstart.UI
 {
@@ -29,17 +31,20 @@ namespace IdentityServer4.Quickstart.UI
     {
         private readonly TestUserStore _users;
         private readonly IIdentityServerInteractionService _interaction;
+        private readonly IEventService _events;
         private readonly AccountService _account;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IHttpContextAccessor httpContextAccessor,
+            IEventService events,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             _users = users ?? new TestUserStore(TestUsers.Users);
             _interaction = interaction;
+            _events = events;
             _account = new AccountService(interaction, httpContextAccessor, clientStore);
         }
 
@@ -86,6 +91,7 @@ namespace IdentityServer4.Quickstart.UI
 
                     // issue authentication cookie with subject ID and username
                     var user = _users.FindByUsername(model.Username);
+                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId, user.Username));
                     await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, props);
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
@@ -96,6 +102,8 @@ namespace IdentityServer4.Quickstart.UI
 
                     return Redirect("~/");
                 }
+
+                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
 
                 ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
             }
@@ -150,6 +158,12 @@ namespace IdentityServer4.Quickstart.UI
             // delete local authentication cookie
             await HttpContext.Authentication.SignOutAsync();
 
+            var user = await HttpContext.GetIdentityServerUserAsync();
+            if (user != null)
+            {
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId(), user.GetName()));
+            }
+
             return View("LoggedOut", vm);
         }
 
@@ -165,14 +179,23 @@ namespace IdentityServer4.Quickstart.UI
             if (AccountOptions.WindowsAuthenticationSchemes.Contains(provider))
             {
                 // but they don't support the redirect uri, so this URL is re-triggered when we call challenge
-                if (HttpContext.User is WindowsPrincipal)
+                if (HttpContext.User is WindowsPrincipal wp)
                 {
                     var props = new AuthenticationProperties();
                     props.Items.Add("scheme", AccountOptions.WindowsAuthenticationProviderName);
 
                     var id = new ClaimsIdentity(provider);
-                    id.AddClaim(new Claim(ClaimTypes.NameIdentifier, HttpContext.User.Identity.Name));
-                    id.AddClaim(new Claim(ClaimTypes.Name, HttpContext.User.Identity.Name));
+                    id.AddClaim(new Claim(JwtClaimTypes.Subject, HttpContext.User.Identity.Name));
+                    id.AddClaim(new Claim(JwtClaimTypes.Name, HttpContext.User.Identity.Name));
+
+                    // add the groups as claims -- be careful if the number of groups is too large
+                    if (AccountOptions.IncludeWindowsGroups)
+                    {
+                        var wi = wp.Identity as WindowsIdentity;
+                        var groups = wi.Groups.Translate(typeof(NTAccount));
+                        var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
+                        id.AddClaims(roles);
+                    }
 
                     await HttpContext.Authentication.SignInAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
                     return Redirect(returnUrl);
@@ -258,6 +281,7 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             // issue authentication cookie for user
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, userId, user.SubjectId, user.Username));
             await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
 
             // delete temporary cookie used during external authentication

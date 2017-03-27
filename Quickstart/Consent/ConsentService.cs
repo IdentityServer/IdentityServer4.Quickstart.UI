@@ -8,7 +8,6 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace IdentityServer4.Quickstart.UI
 {
