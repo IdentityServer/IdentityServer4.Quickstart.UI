@@ -3,25 +3,25 @@
 }
 
 .navbar-header {
-    position:relative;
-    top:-4px;
+    position: relative;
+    top: -4px;
 }
 
 .navbar-brand > .icon-banner {
-    position:relative;
-    top:-2px;
-    display:inline;
+    position: relative;
+    top: -2px;
+    display: inline;
 }
 
 .icon {
-    position:relative;
-    top:-10px;
+    position: relative;
+    top: -10px;
 }
 
 .logged-out iframe {
-    display:none;
-    width:0;
-    height:0;
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 .page-consent {
@@ -58,6 +58,59 @@
 
         .consent-remember {
             padding-left: 16px;
+        }
+    }
+}
+
+.grants {
+    .page-header {
+        margin-bottom: 10px;
+    }
+
+    .grant {
+        margin-top: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid lightgray;
+
+        img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .clientname {
+            font-size: 140%;
+            font-weight: bold;
+        }
+
+        .granttype {
+            font-size: 120%;
+            font-weight: bold;
+        }
+
+        .created {
+            font-size: 120%;
+            font-weight: bold;
+        }
+
+        .expires {
+            font-size: 120%;
+            font-weight: bold;
+        }
+
+        li {
+            list-style-type: none;
+            display: inline;
+
+            &:after {
+                content: ', ';
+            }
+
+            &:last-child:after {
+                content: '';
+            }
+
+            .displayname {
+            }
         }
     }
 }
