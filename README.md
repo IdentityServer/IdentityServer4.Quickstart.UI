@@ -8,7 +8,7 @@ Note that the repo doesn't include solution and project files, but should be cop
 The assumption is that you started with an empty web application, added identityserver and configured the resources, clients and users. 
 
 ### Adding MVC
-The quickstart UI uses MVC. Before you can add the UI you need to add the following packages to project.json:
+The quickstart UI uses MVC. Before you can add the UI you need to add the following packages to your project:
 
 ```
 "Microsoft.AspNetCore.Mvc": "1.1.0",
