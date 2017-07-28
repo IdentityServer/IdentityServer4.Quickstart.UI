@@ -53,7 +53,7 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercon
 ### Adding support for external authentication
 
 You can add support for external authentication providers by adding additional authentication middleware to your pipeline.
-For this example we are adding support for a cloud hosted identityserver3 instance via the OpenID Connect protocol and Google authentication.
+For this example we are adding support for a cloud hosted identityserver4 instance via the OpenID Connect protocol and Google authentication.
 
 Add the following packages to project.json:
 
