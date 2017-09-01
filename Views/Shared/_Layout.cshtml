@@ -3,8 +3,7 @@
     string name = null;
     if (!true.Equals(ViewData["signed-out"]))
     {
-        var user = await Context.GetIdentityServerUserAsync();
-        name = user?.FindFirst("name")?.Value;
+        name = Context.User?.FindFirst("name")?.Value;
     }
 }
 <!DOCTYPE html>

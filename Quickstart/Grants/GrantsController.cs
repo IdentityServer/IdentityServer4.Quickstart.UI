@@ -16,7 +16,7 @@ namespace IdentityServer4.Quickstart.UI
     /// This sample controller allows a user to revoke grants given to clients
     /// </summary>
     [SecurityHeaders]
-    [Authorize(ActiveAuthenticationSchemes = IdentityServer4.IdentityServerConstants.DefaultCookieAuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = IdentityServer4.IdentityServerConstants.DefaultCookieAuthenticationScheme)]
     public class GrantsController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
@@ -73,7 +73,7 @@ namespace IdentityServer4.Quickstart.UI
                         Created = grant.CreationTime,
                         Expires = grant.Expiration,
                         IdentityGrantNames = resources.IdentityResources.Select(x => x.DisplayName ?? x.Name).ToArray(),
-                        ApiGrantNames = resources.ApiResources.Select(x => x.DisplayName ?? x.Name).ToArray(),
+                        ApiGrantNames = resources.ApiResources.Select(x => x.DisplayName ?? x.Name).ToArray()
                     };
 
                     list.Add(item);
