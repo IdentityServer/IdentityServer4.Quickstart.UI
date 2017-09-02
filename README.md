@@ -11,8 +11,8 @@ The assumption is that you started with an empty web application, added identity
 The quickstart UI uses MVC. Before you can add the UI you need to add the following packages to your project:
 
 ```
-"Microsoft.AspNetCore.Mvc": "1.1.0",
-"Microsoft.AspNetCore.StaticFiles": "1.1.0"
+"Microsoft.AspNetCore.Mvc": "2.0.0",
+"Microsoft.AspNetCore.StaticFiles": "2.0.0"
 ```
 
 ...and add MVC and static files to your pipeline:
@@ -58,9 +58,9 @@ For this example we are adding support for a cloud hosted identityserver4 instan
 Add the following packages to project.json:
 
 ```
-"Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
-"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.1.0",
-"Microsoft.AspNetCore.Authentication.Google": "1.1.0"
+"Microsoft.AspNetCore.Authentication.Cookies": "2.0.0",
+"Microsoft.AspNetCore.Authentication.OpenIdConnect": "2.0.0",
+"Microsoft.AspNetCore.Authentication.Google": "2.0.0"
 ```
 
 Next you need to configure the authentication middleware in your pipeline. As always - order is important - the additional authentication middleware must run **after** identityserver, but **before** MVC:
@@ -68,39 +68,39 @@ Next you need to configure the authentication middleware in your pipeline. As al
 ```csharp
 public class Startup
 {
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+	public void ConfigureServices(IServiceCollection services)
     {
-        loggerFactory.AddConsole();
+		services.UseAuthentication()
+			.UseGoogleAuthentication(new GoogleOptions
+			{
+				AuthenticationScheme = "Google",
+				SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+				ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
+				ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
+			})
+			.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+			{
+				SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+				SignOutScheme = IdentityServerConstants.SignoutScheme,
+
+				DisplayName = "OpenID Connect",
+				Authority = "https://demo.identityserver.io/",
+				ClientId = "implicit",
+                
+				TokenValidationParameters = new TokenValidationParameters
+				{
+					NameClaimType = "name",
+					RoleClaimType = "role"
+				}
+			});
+    }
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
         app.UseDeveloperExceptionPage();
 
         app.UseIdentityServer();
-
-        // middleware for google authentication
-        app.UseGoogleAuthentication(new GoogleOptions
-        {
-            AuthenticationScheme = "Google",
-            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
-            ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
-        });
-        
-        // middleware for external openid connect authentication
-        app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-        {
-            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            SignOutScheme = IdentityServerConstants.SignoutScheme,
-
-            DisplayName = "OpenID Connect",
-            Authority = "https://demo.identityserver.io/",
-            ClientId = "implicit",
-                
-            TokenValidationParameters = new TokenValidationParameters
-            {
-                NameClaimType = "name",
-                RoleClaimType = "role"
-            }
-        });
-
+		app.UseAuthentication();
         app.UseStaticFiles();
         app.UseMvcWithDefaultRoute();
     }
