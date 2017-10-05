@@ -78,7 +78,7 @@ namespace IdentityServer4.Quickstart.UI
                 // communicate outcome of consent back to identityserver
                 await _interaction.GrantConsentAsync(request, grantedConsent);
 
-                // indiate that's it ok to redirect back to authorization endpoint
+                // indicate that's it ok to redirect back to authorization endpoint
                 result.RedirectUri = model.ReturnUrl;
             }
             else
@@ -132,7 +132,7 @@ namespace IdentityServer4.Quickstart.UI
 
             vm.ReturnUrl = returnUrl;
 
-            vm.ClientName = client.ClientName;
+            vm.ClientName = client.ClientName ?? client.ClientId;
             vm.ClientUrl = client.ClientUri;
             vm.ClientLogoUrl = client.LogoUri;
             vm.AllowRememberConsent = client.AllowRememberConsent;
@@ -158,7 +158,7 @@ namespace IdentityServer4.Quickstart.UI
                 Description = identity.Description,
                 Emphasize = identity.Emphasize,
                 Required = identity.Required,
-                Checked = check || identity.Required,
+                Checked = check || identity.Required
             };
         }
 
@@ -171,7 +171,7 @@ namespace IdentityServer4.Quickstart.UI
                 Description = scope.Description,
                 Emphasize = scope.Emphasize,
                 Required = scope.Required,
-                Checked = check || scope.Required,
+                Checked = check || scope.Required
             };
         }
 
