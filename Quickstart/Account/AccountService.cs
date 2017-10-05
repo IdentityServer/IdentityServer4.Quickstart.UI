@@ -18,7 +18,7 @@ namespace IdentityServer4.Quickstart.UI
         private readonly IClientStore _clientStore;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private IAuthenticationSchemeProvider _schemeProvider;
+        private readonly IAuthenticationSchemeProvider _schemeProvider;
 
         public AccountService(
             IIdentityServerInteractionService interaction,

@@ -142,7 +142,14 @@ namespace IdentityServer4.Quickstart.UI
         [HttpGet]
         public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
         {
-            returnUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
+            var props = new AuthenticationProperties()
+            {
+                RedirectUri = Url.Action("ExternalLoginCallback"),
+                Items =
+                {
+                    { "returnUrl", returnUrl }
+                }
+            };
 
             // windows authentication needs special handling
             // since they don't support the redirect uri, 
@@ -153,7 +160,6 @@ namespace IdentityServer4.Quickstart.UI
                 var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
                 if (result?.Principal is WindowsPrincipal wp)
                 {
-                    var props = new AuthenticationProperties();
                     props.Items.Add("scheme", AccountOptions.WindowsAuthenticationSchemeName);
 
                     var id = new ClaimsIdentity(provider);
@@ -169,24 +175,23 @@ namespace IdentityServer4.Quickstart.UI
                         id.AddClaims(roles);
                     }
 
-                    await HttpContext.SignInAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
-                    return Redirect(returnUrl);
+                    await HttpContext.SignInAsync(
+                        IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                        new ClaimsPrincipal(id),
+                        props);
+                    return Redirect(props.RedirectUri);
                 }
                 else
                 {
                     // challenge/trigger windows auth
-                    return new ChallengeResult(AccountOptions.WindowsAuthenticationSchemeName);
+                    return Challenge(AccountOptions.WindowsAuthenticationSchemeName);
                 }
             }
             else
             {
                 // start challenge and roundtrip the return URL
-                var props = new AuthenticationProperties
-                {
-                    RedirectUri = returnUrl,
-                    Items = { { "scheme", provider } }
-                };
-                return new ChallengeResult(provider, props);
+                props.Items.Add("scheme", provider);
+                return Challenge(props, provider);
             }
         }
 
@@ -194,7 +199,7 @@ namespace IdentityServer4.Quickstart.UI
         /// Post processing of external authentication
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
+        public async Task<IActionResult> ExternalLoginCallback()
         {
             // read external identity from the temporary cookie
             var result = await HttpContext.AuthenticateAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
@@ -265,6 +270,7 @@ namespace IdentityServer4.Quickstart.UI
             await HttpContext.SignOutAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             // validate return URL and redirect back to authorization endpoint or a local page
+            var returnUrl = result.Properties.Items["returnUrl"];
             if (_interaction.IsValidReturnUrl(returnUrl) || Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -321,7 +327,6 @@ namespace IdentityServer4.Quickstart.UI
                 string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
 
                 // this triggers a redirect to the external provider for sign-out
-                // hack: try/catch to handle social providers that throw
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 

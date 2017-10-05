@@ -52,7 +52,7 @@ namespace IdentityServer4.Quickstart.UI
             return RedirectToAction("Index");
         }
 
-        async Task<GrantsViewModel> BuildViewModelAsync()
+        private async Task<GrantsViewModel> BuildViewModelAsync()
         {
             var grants = await _interaction.GetAllUserConsentsAsync();
 
