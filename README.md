@@ -1,4 +1,4 @@
-# Quickstart UI for an in-memory IdentityServer4
+# Quickstart UI for an in-memory IdentityServer4 v2
 
 This repo contains an MVC based UI for login, logout and consent that supplements an IdentityServer4 configured for in-memory clients, users, and scopes.
 
@@ -7,11 +7,11 @@ This repo contains an MVC based UI for login, logout and consent that supplement
 The assumption is that you started with an empty web application, added identityserver and configured the resources, clients and users. 
 
 ### Adding MVC
-The quickstart UI uses MVC. Before you can add the UI you need to add the following packages to project.json:
+The quickstart UI uses MVC. Before you can add the UI you need to add the following nuget packages:
 
 ```
-"Microsoft.AspNetCore.Mvc": "1.1.0",
-"Microsoft.AspNetCore.StaticFiles": "1.1.0"
+Microsoft.AspNetCore.Mvc
+Microsoft.AspNetCore.StaticFiles
 ```
 
 ...and add MVC and static files to your pipeline:
@@ -26,14 +26,12 @@ public class Startup
         // rest omitted
     }
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder app)
     {
-        loggerFactory.AddConsole();
-        app.UseDeveloperExceptionPage();
+        app.UseStaticFiles();
 
         app.UseIdentityServer();
 
-        app.UseStaticFiles();
         app.UseMvcWithDefaultRoute();
     }
 }
@@ -46,62 +44,60 @@ This repo contains the controllers, models, views and CSS files needed for the U
 Alternatively you can run this powershell script from your web project directory to download them automatically:
 
 ```
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
 ``` 
 
 ### Adding support for external authentication
 
-You can add support for external authentication providers by adding additional authentication middleware to your pipeline.
-For this example we are adding support for a cloud hosted identityserver3 instance via the OpenID Connect protocol and Google authentication.
+You can add support for external authentication providers by adding additional authentication handlers.
+For this example we are adding support for a cloud hosted identityserver instance via the OpenID Connect protocol and Google authentication.
 
-Add the following packages to project.json:
+Add the following nuget packages to your project:
 
 ```
-"Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
-"Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.1.0",
-"Microsoft.AspNetCore.Authentication.Google": "1.1.0"
+Microsoft.AspNetCore.Authentication.OpenIdConnect
+Microsoft.AspNetCore.Authentication.Google
 ```
 
-Next you need to configure the authentication middleware in your pipeline. As always - order is important - the additional authentication middleware must run **after** identityserver, but **before** MVC:
+Next you need to configure the authentication handlers:
 
 ```csharp
 public class Startup
 {
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public void ConfigureServices(IServiceCollection services)
     {
-        loggerFactory.AddConsole();
-        app.UseDeveloperExceptionPage();
-
-        app.UseIdentityServer();
-
-        // middleware for google authentication
-        app.UseGoogleAuthentication(new GoogleOptions
-        {
-            AuthenticationScheme = "Google",
-            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
-            ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
-        });
+        services.AddMvc();
         
-        // middleware for external openid connect authentication
-        app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-        {
-            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            SignOutScheme = IdentityServerConstants.SignoutScheme,
-
-            DisplayName = "OpenID Connect",
-            Authority = "https://demo.identityserver.io/",
-            ClientId = "implicit",
-                
-            TokenValidationParameters = new TokenValidationParameters
+        // some details omitted
+        services.AddIdentityServer();
+        
+          services.AddAuthentication()
+            .AddGoogle("Google", options =>
             {
-                NameClaimType = "name",
-                RoleClaimType = "role"
-            }
-        });
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
-        app.UseStaticFiles();
-        app.UseMvcWithDefaultRoute();
+                options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+                options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
+            })
+            .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+
+                options.Authority = "https://demo.identityserver.io/";
+                options.ClientId = "implicit";
+                options.ResponseType = "id_token";
+                options.SaveTokens = true;
+                options.CallbackPath = new PathString("/signin-idsrv");
+                options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
+                options.RemoteSignOutPath = new PathString("/signout-idsrv");
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                };
+            });
     }
 }
 ```
