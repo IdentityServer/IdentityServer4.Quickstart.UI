@@ -1,7 +1,9 @@
 # Quickstart UI for an in-memory IdentityServer4 v2
 
 This repo contains an MVC based UI for login, logout and consent that supplements an IdentityServer4 configured for in-memory clients, users, and scopes. 
-Note that the repo doesn't include solution and project files, but should be copied to your project as described below. 
+Note that the repo doesn't include solution and project files, but should be copied to your project as described below.
+
+**note** This branch contains the files for IdentityServer4 v2 and ASP.NET Core / MVC 2. The files for IdentityServer 1.x and ASP.NET Core 1.x can be found [on this branch](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/tree/aspnetcore1). The documentation for 1.x can be found [here](http://docs.identityserver.io/en/aspnetcore1/).
 
 ## Instructions
 
