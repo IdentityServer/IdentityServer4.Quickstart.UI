@@ -114,6 +114,7 @@ namespace IdentityServer4.Quickstart.UI
                             ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
                         };
                     };
+
                     // issue authentication cookie with subject ID and username
                     await HttpContext.SignInAsync(user.SubjectId, user.Username, props);
 
@@ -315,7 +316,7 @@ namespace IdentityServer4.Quickstart.UI
                 await HttpContext.SignOutAsync();
 
                 // raise the logout event
-                await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId(), user.GetName()));
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId(), user.GetDisplayName()));
             }
 
             // check if we need to trigger sign-out at an upstream identity provider
