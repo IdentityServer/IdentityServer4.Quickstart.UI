@@ -50,6 +50,12 @@ Alternatively you can run this powershell script from your web project directory
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
 ``` 
 
+Or using bash one-liner on macOS or Linux:
+
+```bash
+\curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.sh | bash
+```
+
 ### Adding support for external authentication
 
 You can add support for external authentication providers by adding additional authentication handlers.
