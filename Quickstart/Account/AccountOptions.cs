@@ -19,8 +19,8 @@ namespace IdentityServer4.Quickstart.UI
         // windows auth enabled.
         public static bool WindowsAuthenticationEnabled = true;
         public static bool IncludeWindowsGroups = false;
-        // specify the Windows authentication scheme and display name
-        public static readonly string WindowsAuthenticationSchemeName = "Windows";
+        // specify the Windows authentication scheme
+        public static readonly string WindowsAuthenticationSchemeName = Microsoft.AspNetCore.Server.IISIntegration.IISDefaults.AuthenticationScheme;
 
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";
     }
