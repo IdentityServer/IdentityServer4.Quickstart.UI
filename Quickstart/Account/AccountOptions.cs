@@ -15,12 +15,10 @@ namespace IdentityServer4.Quickstart.UI
         public static bool ShowLogoutPrompt = true;
         public static bool AutomaticRedirectAfterSignOut = false;
 
-        // to enable windows authentication, the host (IIS or IIS Express) also must have 
-        // windows auth enabled.
-        public static bool WindowsAuthenticationEnabled = true;
-        public static bool IncludeWindowsGroups = false;
-        // specify the Windows authentication scheme
+        // specify the Windows authentication scheme being used
         public static readonly string WindowsAuthenticationSchemeName = Microsoft.AspNetCore.Server.IISIntegration.IISDefaults.AuthenticationScheme;
+        // if user uses windows auth, should we load the groups from windows
+        public static bool IncludeWindowsGroups = false;
 
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";
     }
