@@ -182,12 +182,13 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             // lookup our user and external provider info
-            var (user, provider, providerUserId) = FindUserFromExternalProvider(result);
+            var (user, provider, providerUserId, claims) = FindUserFromExternalProvider(result);
             if (user == null)
             {
                 // this might be where you might initiate a custom workflow for user registration
                 // in this sample we don't show how that would be done, as our sample implementation
-                // in FindUserFromExternalProvider automatically provisions new users.
+                // simply auto-provisions new external user
+                user = AutoProvisionUser(provider, providerUserId, claims);
             }
 
             // this allows us to collect any additonal claims or properties
@@ -441,7 +442,7 @@ namespace IdentityServer4.Quickstart.UI
             }
         }
 
-        private (TestUser user, string provider, string providerUserId) FindUserFromExternalProvider(AuthenticateResult result)
+        private (TestUser user, string provider, string providerUserId, IEnumerable<Claim> claims) FindUserFromExternalProvider(AuthenticateResult result)
         {
             var externalUser = result.Principal;
 
@@ -452,27 +453,23 @@ namespace IdentityServer4.Quickstart.UI
                               externalUser.FindFirst(ClaimTypes.NameIdentifier) ??
                               throw new Exception("Unknown userid");
 
+            // remove the user id claim so we don't include it as an extra claim if/when we provision the user
+            var claims = externalUser.Claims.ToList();
+            claims.Remove(userIdClaim);
+
             var provider = result.Properties.Items["scheme"];
             var providerUserId = userIdClaim.Value;
 
-            // check if the external user is already provisioned
+            // find external user
             var user = _users.FindByExternalProvider(provider, providerUserId);
-            if (user == null)
-            {
-                // this is where custom logic would most likely be needed to match your users from the
-                // external provider's authentication result, and provision the user as you see fit.
-                // 
-                // this sample simply auto-provisions new external user
-                // another common approach is to start a registrations workflow first
 
-                // remove the user id claim so we don't include it as an extra claim if/when we provision the user
-                var claims = externalUser.Claims.ToList();
-                claims.Remove(userIdClaim);
+            return (user, provider, providerUserId, claims);
+        }
 
-                user = _users.AutoProvisionUser(provider, providerUserId, claims);
-            }
-
-            return (user, provider, providerUserId);
+        private TestUser AutoProvisionUser(string provider, string providerUserId, IEnumerable<Claim> claims)
+        {
+            var user = _users.AutoProvisionUser(provider, providerUserId, claims.ToList());
+            return user;
         }
 
         private void ProcessLoginCallbackForOidc(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
