@@ -1,10 +1,8 @@
-﻿@using Microsoft.AspNetCore.Hosting
 @model ErrorViewModel
-@inject IHostingEnvironment host
 
 @{
     var error = Model?.Error?.Error;
-    var errorDescription = host.IsDevelopment() ? Model?.Error?.ErrorDescription : null;
+    var errorDescription = Model?.Error?.ErrorDescription;
     var request_id = Model?.Error?.RequestId;
 }
 
