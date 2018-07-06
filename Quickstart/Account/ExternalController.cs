@@ -142,7 +142,7 @@ namespace Host.Quickstart.Account
             if (result?.Principal is WindowsPrincipal wp)
             {
                 // we will issue the external cookie and then redirect the
-                // user back to the external callback, in essence, tresting windows
+                // user back to the external callback, in essence, treating windows
                 // auth the same as any other external authentication mechanism
                 var props = new AuthenticationProperties()
                 {
