@@ -1,0 +1,14 @@
+@model string
+
+<div class="page-header">
+    <h1>
+        Confirm Request
+    </h1>
+    <p>
+        Please confirm that the authorization request quotes the code: "@Model".
+    </p>
+    <form asp-action="callback" method="post">
+        <input for="userCode" name="userCode" type="hidden" value="@Model" />
+        <button class="btn btn-primary">Confirm</button>
+    </form>
+</div>
