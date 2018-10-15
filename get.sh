@@ -2,7 +2,7 @@
 
 set -e
 
-SOURCE="https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/archive/dev.zip"
+SOURCE="https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/archive/release.zip"
 curl -L -o ui.zip "$SOURCE"
 
 unzip -d ui ui.zip
