@@ -107,7 +107,7 @@ namespace IdentityServer4.Quickstart.UI
             ConsentResponse grantedConsent = null;
 
             // user clicked 'no' - send back the standard 'access_denied' response
-            if (model.Button == "no")
+            if (model?.Button == "no")
             {
                 grantedConsent = ConsentResponse.Denied;
 
