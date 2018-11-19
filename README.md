@@ -14,14 +14,6 @@ For issues, use the [consolidated IdentityServer4 issue tracker](https://github.
 The assumption is that you started with an empty web application, added identityserver and configured the resources, clients and users. 
 
 ### Adding MVC
-The quickstart UI uses MVC. Before you can add the UI you need to add the following nuget packages (these packages are not required if you're targeting ASP.NET Core 2.0 and the package `Microsoft.AspNetCore.All` is installed):
-
-```
-Microsoft.AspNetCore.Mvc
-Microsoft.AspNetCore.StaticFiles
-```
-
-...and add MVC and static files to your pipeline:
 
 ```csharp
 public class Startup
@@ -51,28 +43,19 @@ This repo contains the controllers, models, views and CSS files needed for the U
 Alternatively you can run this powershell script from your web project directory to download them automatically:
 
 ```
-iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/master/getmaster.ps1'))
 ``` 
 
 Or using bash one-liner on macOS or Linux:
 
 ```bash
-\curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.sh | bash
+\curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/master/getmaster.sh | bash
 ```
 
 ### Adding support for external authentication
 
 You can add support for external authentication providers by adding additional authentication handlers.
 For this example we are adding support for a cloud hosted identityserver instance via the OpenID Connect protocol and Google authentication.
-
-Add the following nuget packages to your project:
-
-```
-Microsoft.AspNetCore.Authentication.OpenIdConnect
-Microsoft.AspNetCore.Authentication.Google
-```
-
-Next you need to configure the authentication handlers:
 
 ```csharp
 public class Startup
@@ -89,8 +72,8 @@ public class Startup
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
-                options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
-                options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
+                options.ClientId = "<insert here>";
+                options.ClientSecret = "<inser here>";
             })
             .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
             {
@@ -116,4 +99,3 @@ public class Startup
 ```
 
 **Note** for Google authentication you need to register your local quickstart identityserver using the Google developer [console](https://console.developers.google.com). As a redirect URL, use the URL of your local identityserver and add `/signin-google`.
-If your IdentityServer is running on port 5000 - you can use the above client id/secret which is pre-registered.
