@@ -159,7 +159,7 @@ namespace IdentityServer4.Quickstart.UI
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
-                ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
+                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
@@ -231,14 +231,22 @@ namespace IdentityServer4.Quickstart.UI
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null)
             {
+                var local = context.IdP == IdentityServerConstants.LocalIdentityProvider;
+
                 // this is meant to short circuit the UI and only trigger the one external IdP
-                return new LoginViewModel
+                var vm = new LoginViewModel
                 {
-                    EnableLocalLogin = false,
+                    EnableLocalLogin = local,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
-                    ExternalProviders = new ExternalProvider[] { new ExternalProvider { AuthenticationScheme = context.IdP } }
                 };
+
+                if (!local)
+                {
+                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
+                }
+
+                return vm;
             }
 
             var schemes = await _schemeProvider.GetAllSchemesAsync();
