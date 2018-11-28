@@ -1,10 +1,14 @@
+@{
+    var version = typeof(IdentityServer4.Hosting.IdentityServerMiddleware).Assembly.GetName().Version.ToString();
+}
+
 <div class="welcome-page">
     <div class="row page-header">
         <div class="col-sm-10">
             <h1>
                 <img class="icon" src="~/icon.jpg">
                 Welcome to IdentityServer4
-                @*<small>(build {version})</small>*@
+                <small>(version @version)</small>
             </h1>
         </div>
     </div>
