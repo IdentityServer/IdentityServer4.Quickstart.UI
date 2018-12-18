@@ -236,6 +236,8 @@ namespace Host.Quickstart.Account
 
         private void ProcessLoginCallbackForSaml2p(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
         {
+            // Carry over claims neeed to do SAML2 single logout.
+            localClaims.AddRange(externalResult.Principal.Claims.Where(c => c.Type.StartsWith("http://Sustainsys.se/Saml2")));
         }
     }
 }
