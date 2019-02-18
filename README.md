@@ -49,7 +49,7 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercon
 Or using bash one-liner on macOS or Linux:
 
 ```bash
-\curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/master/getmaster.sh | bash
+curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/master/getmaster.sh | bash
 ```
 
 ### Adding support for external authentication
