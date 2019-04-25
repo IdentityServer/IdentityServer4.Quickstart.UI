@@ -74,6 +74,12 @@ public class Startup
 
                 options.ClientId = "<insert here>";
                 options.ClientSecret = "<inser here>";
+                options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+                options.ClaimActions.Clear();
+                options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+                options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+                options.ClaimActions.MapJsonKey("urn:google:profile", "link");
             })
             .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
             {
