@@ -44,10 +44,6 @@
             margin-right: 5px;
         }
 
-        .consent-scopecheck[disabled] {
-            //visibility:hidden;
-        }
-
         .consent-description {
             margin-left: 25px;
 
@@ -107,9 +103,6 @@
 
             &:last-child:after {
                 content: '';
-            }
-
-            .displayname {
             }
         }
     }
