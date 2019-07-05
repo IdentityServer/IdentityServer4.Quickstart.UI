@@ -12,6 +12,7 @@ namespace IdentityServer4.Quickstart.UI
         public override void OnResultExecuting(ResultExecutingContext context)
         {
             var result = context.Result;
+            var tmp = "sss";
             if (result is ViewResult)
             {
                 if (!context.HttpContext.Response.Headers.ContainsKey("X-Content-Type-Options"))
