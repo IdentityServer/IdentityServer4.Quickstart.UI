@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Events;
-using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
@@ -14,8 +7,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading.Tasks;
 
-namespace Host.Quickstart.Account
+namespace IdentityServer4.Quickstart.UI
 {
     [SecurityHeaders]
     [AllowAnonymous]
@@ -24,12 +24,14 @@ namespace Host.Quickstart.Account
         private readonly TestUserStore _users;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
+        private readonly ILogger<ExternalController> _logger;
         private readonly IEventService _events;
 
         public ExternalController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IEventService events,
+            ILogger<ExternalController> logger,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -38,6 +40,7 @@ namespace Host.Quickstart.Account
 
             _interaction = interaction;
             _clientStore = clientStore;
+            _logger = logger;
             _events = events;
         }
 
@@ -91,6 +94,12 @@ namespace Host.Quickstart.Account
                 throw new Exception("External authentication error");
             }
 
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                var externalClaims = result.Principal.Claims.Select(c => $"{c.Type}: {c.Value}");
+                _logger.LogDebug("External claims: {@claims}", externalClaims);
+            }
+
             // lookup our user and external provider info
             var (user, provider, providerUserId, claims) = FindUserFromExternalProvider(result);
             if (user == null)
@@ -111,7 +120,6 @@ namespace Host.Quickstart.Account
             ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);
 
             // issue authentication cookie for user
-            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username));
             await HttpContext.SignInAsync(user.SubjectId, user.Username, provider, localSignInProps, additionalLocalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
@@ -122,6 +130,8 @@ namespace Host.Quickstart.Account
 
             // check if external login is in the context of an OIDC request
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username, true, context?.ClientId));
+
             if (context != null)
             {
                 if (await _clientStore.IsPkceClientAsync(context.ClientId))
