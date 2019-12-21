@@ -94,8 +94,6 @@ namespace IdentityServer4.Quickstart.UI
                     {
                         // if the client is PKCE then we assume it's native, so this change in how to
                         // return the response is for better UX for the end user.
-                        //return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
-
                         return this.LoadingPage("Redirect", model.ReturnUrl);
                     }
 
@@ -142,7 +140,6 @@ namespace IdentityServer4.Quickstart.UI
                         {
                             // if the client is PKCE then we assume it's native, so this change in how to
                             // return the response is for better UX for the end user.
-                            //return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
                             return this.LoadingPage("Redirect", model.ReturnUrl);
                         }
 
