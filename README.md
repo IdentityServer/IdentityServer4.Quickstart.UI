@@ -22,7 +22,10 @@ curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickst
 
 Or you can use our [templates](https://github.com/IdentityServer/IdentityServer4.Templates):
 
-``dotnet new is4ui``
+```
+dotnet new -i identityserver4.templates
+dotnet new is4ui
+```
 
 ## Issues
 For issues, use the [consolidated IdentityServer4 issue tracker](https://github.com/IdentityServer/IdentityServer4/issues).
