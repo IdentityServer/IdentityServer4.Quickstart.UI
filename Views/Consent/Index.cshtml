@@ -39,7 +39,7 @@
                     </div>
                 }
 
-                @if (Model.ApiScopes.Any())
+                @if (Model.ResourceScopes.Any())
                 {
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -47,23 +47,13 @@
                             Application Access
                         </div>
                         <ul class="list-group">
-                            @foreach (var scope in Model.ApiScopes)
+                            @foreach (var scope in Model.ResourceScopes)
                             {
                                 <partial name="_ScopeListItem" model="scope" />
                             }
                         </ul>
                     </div>
                 }
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <span class="glyphicon glyphicon-tasks"></span>
-                        Device Description
-                    </div>
-                    <div class="panel-body">
-                        <input class="form-control" placeholder="Description or name of device" asp-for="Description" autofocus>
-                    </div>
-                </div>
 
                 @if (Model.AllowRememberConsent)
                 {

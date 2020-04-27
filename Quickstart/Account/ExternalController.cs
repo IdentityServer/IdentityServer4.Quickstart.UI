@@ -48,7 +48,7 @@ namespace IdentityServer4.Quickstart.UI
         /// initiate roundtrip to external authentication provider
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Challenge(string scheme, string returnUrl)
+        public async Task<IActionResult> Challenge(string provider, string returnUrl)
         {
             if (string.IsNullOrEmpty(returnUrl)) returnUrl = "~/";
 
@@ -59,7 +59,7 @@ namespace IdentityServer4.Quickstart.UI
                 throw new Exception("invalid return URL");
             }
 
-            if (AccountOptions.WindowsAuthenticationSchemeName == scheme)
+            if (AccountOptions.WindowsAuthenticationSchemeName == provider)
             {
                 // windows authentication needs special handling
                 return await ProcessWindowsLoginAsync(returnUrl);
@@ -73,11 +73,11 @@ namespace IdentityServer4.Quickstart.UI
                     Items =
                     {
                         { "returnUrl", returnUrl },
-                        { "scheme", scheme },
+                        { "scheme", provider },
                     }
                 };
 
-                return Challenge(props, scheme);
+                return Challenge(props, provider);
             }
         }
 
@@ -137,13 +137,13 @@ namespace IdentityServer4.Quickstart.UI
 
             // check if external login is in the context of an OIDC request
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username, true, context?.Client.ClientId));
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username, true, context?.ClientId));
 
             if (context != null)
             {
-                if (context.IsNativeClient())
+                if (await _clientStore.IsPkceClientAsync(context.ClientId))
                 {
-                    // The client is native, so this change in how to
+                    // if the client is PKCE then we assume it's native, so this change in how to
                     // return the response is for better UX for the end user.
                     return this.LoadingPage("Redirect", returnUrl);
                 }
