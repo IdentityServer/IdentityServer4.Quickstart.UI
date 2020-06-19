@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityServerHost.Quickstart.UI
+namespace IdentityServer4.Quickstart.UI
 {
     public class ConsentViewModel : ConsentInputModel
     {
@@ -14,6 +14,6 @@ namespace IdentityServerHost.Quickstart.UI
         public bool AllowRememberConsent { get; set; }
 
         public IEnumerable<ScopeViewModel> IdentityScopes { get; set; }
-        public IEnumerable<ScopeViewModel> ApiScopes { get; set; }
+        public IEnumerable<ScopeViewModel> ResourceScopes { get; set; }
     }
 }
