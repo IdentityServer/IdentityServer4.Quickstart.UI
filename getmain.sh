@@ -11,8 +11,8 @@ unzip -d ui ui.zip
 [[ -d Views ]] || mkdir Views
 [[ -d wwwroot ]] || mkdir wwwroot
 
-cp -r ./ui/IdentityServer4.Quickstart.UI-master/Quickstart/* Quickstart
-cp -r ./ui/IdentityServer4.Quickstart.UI-master/Views/* Views
-cp -r ./ui/IdentityServer4.Quickstart.UI-master/wwwroot/* wwwroot
+cp -r ./ui/IdentityServer4.Quickstart.UI-main/Quickstart/* Quickstart
+cp -r ./ui/IdentityServer4.Quickstart.UI-main/Views/* Views
+cp -r ./ui/IdentityServer4.Quickstart.UI-main/wwwroot/* wwwroot
 
 rm -rf ui ui.zip
